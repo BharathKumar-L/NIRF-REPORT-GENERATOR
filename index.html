@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NIRF Report Fetcher</title>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #4b79a1, #283e51);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 20px;
+      width: 350px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      color: #fff;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 26px;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00c6ff;
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: linear-gradient(45deg, #0099cc, #005fcc);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: 600;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>NIRF Report Year</h2>
+
+    <label>Select a Year to Fetch Report</label>
+
+    <select id="yearSelect" required></select>
+
+    <button id="submitBtn">Submit</button>
+
+    <p id="result"></p>
+  </div>
+
+
+  <script>
+    // 🟦 Populate Years (from 2016 → Current Year)
+    const currentYear = new Date().getFullYear();
+    const startYear = 2016;
+    const dropdown = document.getElementById("yearSelect");
+
+    for (let y = currentYear; y >= startYear; y--) {
+      let option = document.createElement("option");
+      option.value = y;
+      option.textContent = y;
+      dropdown.appendChild(option);
+    }
+
+    // 🟩 Submit Selected Year
+    document.getElementById("submitBtn").addEventListener("click", async () => {
+      const selectedYear = dropdown.value;
+
+      const data = { year: selectedYear };
+
+      const res = await fetch("http://localhost:3000/api/year", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const response = await res.json();
+      document.getElementById("result").innerText =
+        response.message || response.error;
+    });
+  </script>
+</body>
+</html>
