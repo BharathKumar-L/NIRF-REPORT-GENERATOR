@@ -3,11 +3,15 @@ const axios = require('axios');
 module.exports = async (req, res) => {
   // Handle CORS preflight
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
+  }
+
+  if (req.method === 'GET') {
+    return res.status(200).json({ status: 'API reachable. Use POST to submit a year.' });
   }
 
   if (req.method !== 'POST') {
