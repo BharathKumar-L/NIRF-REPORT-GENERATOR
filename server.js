@@ -50,4 +50,4 @@ app.post('/api/year', async (req, res) => {
 });
 
 // === Start the server ===
-app.listen(3000, () => console.log('🚀 NIRF REPORT Server running on http://localhost:3000'));
+app.listen(process.env.PORT || 3000, () => console.log('🚀 NIRF REPORT Server running on http://localhost:3000'));
