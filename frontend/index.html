@@ -107,7 +107,7 @@
 
       const data = { year: selectedYear };
 
-      const res = await fetch("http://localhost:3000/api/year", {
+      const res = await fetch("api/year", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

@@ -1,19 +1,17 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: '*' }));
 
-// === UiPath Configurations ===
-// Make sure the Queue "YearRequest" exists in your UiPath Orchestrator folder.
-const QUEUE_NAME = 'YearRequest';
+const QUEUE_NAME = process.env.QUEUE_NAME;
 const UIPATH_URL = 'https://cloud.uipath.com/enterqpwogff/DefaultTenant/orchestrator_/odata/Queues/UiPathODataSvc.AddQueueItem';
-const UIPATH_TOKEN ='rt_82C54078EB494544650BFCF95C457B4ED77B7B7C8247A3112E12E8CB8907304E-1'; // Personal Access Token
-const UIPATH_FOLDER_ID = '175288'; // Folder ID of your Orchestrator folder
+const UIPATH_TOKEN = process.env.UIPATH_TOKEN; 
+const UIPATH_FOLDER_ID = process.env.UIPATH_FOLDER_ID; 
 
-// === API Route to receive patient data ===
 app.post('/api/year', async (req, res) => {
   const { year } = req.body;
 
@@ -49,5 +47,4 @@ app.post('/api/year', async (req, res) => {
   }
 });
 
-// === Start the server ===
 app.listen(process.env.PORT || 3000, () => console.log('🚀 NIRF REPORT Server running on http://localhost:3000'));
