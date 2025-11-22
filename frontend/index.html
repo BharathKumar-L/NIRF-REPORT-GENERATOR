@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- MOBILE RESPONSIVE -->
   <title>NIRF Report Fetcher</title>
   <link rel="icon" href="./nirf.png" type="image/x-icon">
 
   <style>
+    /* FULL SCREEN LOADING OVERLAY */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loader-box {
+      text-align: center;
+      color: white;
+    }
+
+    .loader-img {
+      width: 70px;
+      height: 70px;
+    }
+
+    .loader-text {
+      margin-top: 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* MAIN PAGE */
     body {
       margin: 0;
       padding: 0;
       font-family: "Poppins", sans-serif;
       background: linear-gradient(135deg, #4b79a1, #283e51);
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
 
     .container {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      padding: 40px;
+      padding: 30px;
       border-radius: 20px;
-      width: 350px;
+      width: 100%;
+      max-width: 380px;
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
       text-align: center;
       color: #fff;
@@ -32,14 +70,14 @@
     h2 {
       margin-bottom: 20px;
       font-weight: 700;
-      font-size: 26px;
+      font-size: 24px;
     }
 
     label {
       font-size: 16px;
       font-weight: 500;
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     select {
@@ -49,19 +87,18 @@
       border: none;
       font-size: 16px;
       margin-bottom: 20px;
-      background: rgba(255, 255, 255, 0.8);
+      background: rgba(255, 255, 255, 0.9);
     }
 
     button {
       width: 100%;
-      padding: 12px;
-      background: #00c6ff;
+      padding: 14px;
       background: linear-gradient(45deg, #00c6ff, #0072ff);
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       color: white;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       transition: 0.3s;
     }
@@ -74,11 +111,40 @@
       margin-top: 20px;
       font-weight: 600;
       font-size: 15px;
+      min-height: 20px;
+    }
+
+    /* SMALL MOBILE SCREEN FIXES */
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 22px;
+      }
+
+      .loader-img {
+        width: 60px;
+        height: 60px;
+      }
+
+      .container {
+        padding: 25px;
+      }
+
+      button {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
 
 <body>
+
+  <!-- FULL SCREEN LOADING OVERLAY -->
+  <div id="loadingOverlay">
+    <div class="loader-box">
+      <img src="https://i.gifer.com/VAyR.gif" alt="Loading..." class="loader-img">
+      <p class="loader-text">Please wait...</p>
+    </div>
+  </div>
 
   <div class="container">
     <h2>NIRF Report Year</h2>
@@ -88,9 +154,7 @@
     <p id="result"></p>
   </div>
 
-
   <script>
-    // 🟦 Populate Years (from 2016 → Current Year)
     const currentYear = new Date().getFullYear();
     const startYear = 2016;
     const dropdown = document.getElementById("yearSelect");
@@ -102,22 +166,43 @@
       dropdown.appendChild(option);
     }
 
-    // 🟩 Submit Selected Year
     document.getElementById("submitBtn").addEventListener("click", async () => {
       const selectedYear = dropdown.value;
 
-      const data = { year: selectedYear };
+      const overlay = document.getElementById("loadingOverlay");
+      const resultElement = document.getElementById("result");
 
-      const res = await fetch("https://nirf-report-generator-1.onrender.com/api/year", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
+      // Show overlay loader
+      overlay.style.display = "flex";
+      resultElement.innerText = "";
 
-      const response = await res.json();
-      document.getElementById("result").innerText =
-        response.message || response.error;
+      try {
+        const res = await fetch("https://nirf-report-generator-1.onrender.com/api/year", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ year: selectedYear })
+        });
+
+        const response = await res.json();
+
+        // Hide overlay loader
+        overlay.style.display = "none";
+
+        if (response.success) {
+          alert("Year added successfully!");
+          document.getElementById("yearSelect").selectedIndex = 0;
+          resultElement.innerText = "";
+        } else {
+          alert(response.error || "Something went wrong!");
+        }
+
+      } catch (err) {
+        overlay.style.display = "none";
+        alert("❌ Failed to connect to server.");
+      }
     });
   </script>
+
 </body>
+
 </html>
